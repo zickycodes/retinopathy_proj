@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Sequelize } from 'sequelize-typescript';
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
 // import { cors } from 'cors';
 
 async function bootstrap() {
@@ -10,8 +10,8 @@ async function bootstrap() {
   try {
     await sequelize.authenticate();
     console.log('Connected to the database');
-    const configService = new ConfigService();
-    await app.listen(configService.get('PORT') || 3000);
+    // const configService = new ConfigService();
+    await app.listen(3000);
     app.enableCors({
       origin: '*',
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
