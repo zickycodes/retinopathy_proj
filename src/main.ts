@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Sequelize } from 'sequelize-typescript';
-// import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 // import { cors } from 'cors';
 
 async function bootstrap() {
