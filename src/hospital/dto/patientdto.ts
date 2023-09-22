@@ -8,9 +8,17 @@ export class PatientDto {
   @IsString()
   last_name: string;
   @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+  @IsNotEmpty()
   dob: string;
   @IsNotEmpty()
   phone_no: string;
+  @IsNotEmpty()
+  state: string;
+  @IsNotEmpty()
+  lga: string;
   @IsNotEmpty()
   nok: string;
   @IsNotEmpty()

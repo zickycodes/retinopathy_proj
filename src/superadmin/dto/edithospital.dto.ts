@@ -1,7 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class Hospitaldto {
-  @IsNotEmpty()
+export class EditHospitaldto {
   @IsString()
   name: string;
   @IsNotEmpty()
@@ -12,8 +11,6 @@ export class Hospitaldto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  @IsNotEmpty()
-  password: string;
   @IsNotEmpty()
   admin_contact_info: string;
 }

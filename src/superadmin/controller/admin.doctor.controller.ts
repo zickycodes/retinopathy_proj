@@ -33,7 +33,7 @@ export class SuperAdminDocController {
   ) {}
 
   @UseGuards(AdminGuard)
-  @Get('/showdoctors')
+  @Get('/getdoctors')
   showDoctors(@Query('id') id: string) {
     if (id) {
       return this.doctorService.showDoctor(id);
@@ -47,8 +47,8 @@ export class SuperAdminDocController {
   //   return this.doctorService.showDoctor();
   // }
 
-  @UseGuards(AdminGuard)
   @Post('/add-doctors')
+  @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe())
   addDoctors(@Body() body: Doctordto) {
     // console.log(body);
@@ -59,7 +59,7 @@ export class SuperAdminDocController {
   @Put('/edit-doctors/:id')
   @UsePipes(new ValidationPipe())
   editDoctors(@Body() body: Doctordto, @Param() param: any) {
-    // console.log(body);
+    // console.log('bu', body);
     return this.doctorService.editDoctors(param.id, body);
   }
 

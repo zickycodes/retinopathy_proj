@@ -48,7 +48,15 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  state_of_origin: string;
+  phone_no: string;
+
+  // @Column({
+  //   allowNull: false, // set the allowNull option to false to enforce not null constraint
+  //   validate: {
+  //     notNull: { msg: 'Password is required' }, // add a validation message
+  //   },
+  // })
+  // state_of_origin: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint

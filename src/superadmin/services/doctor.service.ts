@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Doctor } from 'src/entities/Doctors';
 import { Doctordto } from '../dto/doctor.dto';
 import { InjectModel } from '@nestjs/sequelize';
+import { EditDoctordto } from '../dto/editdoctor..dto';
 
 @Injectable()
 export class DoctorService {
@@ -17,6 +18,9 @@ export class DoctorService {
       const doctorData = doctors.map((doctor) => ({
         id: doctor.id,
         first_name: doctor.first_name,
+        last_name: doctor.last_name,
+        phone_no: doctor.phone_no,
+        address: doctor.address,
         email: doctor.email,
       }));
       return doctorData;
@@ -38,6 +42,11 @@ export class DoctorService {
 
   async addDoctors(doctor: Doctordto) {
     try {
+      const { email } = doctor;
+      const doc = this.doctor.findOne({ where: { email } });
+      if (doc) {
+        throw new BadRequestException('Doctor already exist');
+      }
       const password = doctor.password;
       const hashedPassword = await bcrypt.hash(password, 10);
       const res = await this.doctor.create({
@@ -57,11 +66,32 @@ export class DoctorService {
     }
   }
 
-  async editDoctors(id: string, body: Doctordto) {
-    return await this.doctor.update({ ...body }, { where: { id } });
+  async editDoctors(id: string, body: EditDoctordto) {
+    try {
+      // 'Doctor has been deleted successfully',
+      // console.log(body);
+      await await this.doctor.update({ ...body }, { where: { id } });
+      return {
+        data: {
+          message: 'Doctor detail has been updated successfully',
+        },
+      };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async deleteDoctor(id: number) {
-    return await this.doctor.destroy({ where: { id } });
+    try {
+      // 'Doctor has been deleted successfully',
+      await this.doctor.destroy({ where: { id } });
+      return {
+        message: {
+          data: 'Doctor has been deleted successfully',
+        },
+      };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 }

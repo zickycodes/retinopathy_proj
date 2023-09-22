@@ -58,6 +58,22 @@ export class Patient extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
+  state: string;
+
+  @Column({
+    allowNull: false, // set the allowNull option to false to enforce not null constraint
+    validate: {
+      notNull: { msg: 'Password is required' }, // add a validation message
+    },
+  })
+  lga: string;
+
+  @Column({
+    allowNull: false, // set the allowNull option to false to enforce not null constraint
+    validate: {
+      notNull: { msg: 'Password is required' }, // add a validation message
+    },
+  })
   nok: string;
 
   @Column({

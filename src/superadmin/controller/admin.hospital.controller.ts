@@ -31,7 +31,7 @@ export class SuperAdminHosController {
   ) {}
 
   @UseGuards(AdminGuard)
-  @Get('/showhospital')
+  @Get('/gethospital')
   showHospital(@Query('id') id: string) {
     if (id) {
       return this.hospitalService.showHospital(id);

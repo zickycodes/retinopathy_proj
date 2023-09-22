@@ -4,6 +4,7 @@ import { Hospital } from 'src/entities/Hospital';
 // import { Doctor } from 'src/entities/Doctors';
 import { Hospitaldto } from '../dto/hospital.dto';
 import { InjectModel } from '@nestjs/sequelize';
+import { EditHospitaldto } from '../dto/edithospital.dto';
 // import { retry } from 'rxjs';
 
 @Injectable()
@@ -20,6 +21,8 @@ export class HospitalService {
         id: hospital.id,
         name: hospital.name,
         email: hospital.email,
+        phone_no: hospital.admin_contact_info,
+        state: hospital.state,
       }));
       return hospitalData;
     } catch (e) {
@@ -40,6 +43,11 @@ export class HospitalService {
   }
   async addHospital(hospital: Hospitaldto) {
     try {
+      const { email } = hospital;
+      const hos = this.hospital.findOne({ where: { email } });
+      if (hos) {
+        throw new BadRequestException('Hospital already exist');
+      }
       const password = hospital.password;
       const hashedPassword = await bcrypt.hash(password, 10);
       const res = await this.hospital.create({
@@ -58,11 +66,18 @@ export class HospitalService {
       throw new BadRequestException(e.message);
     }
   }
-  async editHospital(id: string, body: Hospitaldto) {
+  async editHospital(id: string, body: EditHospitaldto) {
     return await this.hospital.update({ ...body }, { where: { id } });
   }
 
   async deleteHospital(id: number) {
-    return await this.hospital.destroy({ where: { id } });
+    try {
+      await this.hospital.destroy({ where: { id } });
+      return {
+        data: 'Hospital has been deleted successfully',
+      };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 }

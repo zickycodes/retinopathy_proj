@@ -66,7 +66,7 @@ export class AuthService {
             access_token,
             refreshToken,
             id: user.id,
-            // role: user.role,
+            role,
           };
         } else {
           throw new HttpException(

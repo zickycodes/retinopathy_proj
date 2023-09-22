@@ -5,7 +5,7 @@ export class PatientRecord extends Model {
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Email is required' }, // add a validation message
+      notNull: { msg: 'Patient Id is required' }, // add a validation message
     },
   })
   patient_id: string;
@@ -13,7 +13,7 @@ export class PatientRecord extends Model {
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Picture is required' }, // add a validation message
     },
   })
   patient_pic: string;
@@ -21,7 +21,7 @@ export class PatientRecord extends Model {
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Comments is required' }, // add a validation message
     },
   })
   comments: string;

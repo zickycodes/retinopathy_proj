@@ -4,9 +4,9 @@ export class PatientRecordDto {
   @IsNotEmpty()
   @IsString()
   patient_id: string;
-  @IsNotEmpty()
-  @IsString()
-  patient_pic: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // patient_pic: string;
   @IsNotEmpty()
   @IsString()
   comment: string;

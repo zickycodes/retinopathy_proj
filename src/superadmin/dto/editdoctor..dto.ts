@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class Doctordto {
+export class EditDoctordto {
   @IsNotEmpty()
   @IsString()
   first_name: string;
@@ -10,8 +10,6 @@ export class Doctordto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  @IsNotEmpty()
-  password: string;
   @IsNotEmpty()
   address: string;
   @IsNotEmpty()
