@@ -3,9 +3,11 @@ import {
   Table,
   Column,
   Model,
+  HasMany,
   //   HasOne,
   //   BelongsToMany,
 } from 'sequelize-typescript';
+import { Operator } from './Operators';
 
 @Table
 export class Hospital extends Model {
@@ -28,6 +30,7 @@ export class Hospital extends Model {
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
+    unique: true,
     validate: {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
@@ -57,4 +60,7 @@ export class Hospital extends Model {
     },
   })
   admin_contact_info: string;
+
+  @HasMany(() => Operator)
+  operator: Operator[];
 }

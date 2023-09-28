@@ -4,8 +4,10 @@ import {
   Column,
   Model,
   //   HasOne,
-  //   BelongsToMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
+import { PatientRecord } from './Patients_record';
+import { PatientResult } from './Patients_results';
 
 @Table
 export class Doctor extends Model {
@@ -50,14 +52,6 @@ export class Doctor extends Model {
   })
   phone_no: string;
 
-  // @Column({
-  //   allowNull: false, // set the allowNull option to false to enforce not null constraint
-  //   validate: {
-  //     notNull: { msg: 'Password is required' }, // add a validation message
-  //   },
-  // })
-  // state_of_origin: string;
-
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
@@ -65,4 +59,7 @@ export class Doctor extends Model {
     },
   })
   address: string;
+
+  @BelongsToMany(() => PatientRecord, () => PatientResult)
+  patient_records: PatientRecord[];
 }

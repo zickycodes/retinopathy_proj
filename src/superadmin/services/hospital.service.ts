@@ -5,6 +5,11 @@ import { Hospital } from 'src/entities/Hospital';
 import { Hospitaldto } from '../dto/hospital.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { EditHospitaldto } from '../dto/edithospital.dto';
+import { EmailListener } from 'src/email/services/email.listener';
+import { OperatorDto } from 'src/hospital/dto/operatordto';
+import { OperatorService } from 'src/hospital/services/operator.service';
+// import { EmailEvent } from 'src/email/events/emailevents';
+// import { EventEmitter2 } from '@nestjs/event-emitter';
 // import { retry } from 'rxjs';
 
 @Injectable()
@@ -12,6 +17,8 @@ export class HospitalService {
   constructor(
     @InjectModel(Hospital)
     private hospital: typeof Hospital,
+    private emailListener: EmailListener,
+    private operatorService: OperatorService,
   ) {}
 
   async showHospitals() {
@@ -41,12 +48,13 @@ export class HospitalService {
       throw new BadRequestException(e.message);
     }
   }
-  async addHospital(hospital: Hospitaldto) {
+  async addHospital(hospital: Hospitaldto, operator: any) {
     try {
       const { email } = hospital;
-      const hos = this.hospital.findOne({ where: { email } });
+      const hos = await this.hospital.findOne({ where: { email } });
+      console.log('hos', hos);
       if (hos) {
-        throw new BadRequestException('Hospital already exist');
+        throw new BadRequestException('Hospital already exists');
       }
       const password = hospital.password;
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -54,6 +62,15 @@ export class HospitalService {
         ...hospital,
         password: hashedPassword,
       });
+      await this.operatorService.addOperators({
+        ...operator,
+        hospital_id: res.id,
+      });
+      // this.eventEmitter.emit(
+      //   'welcome-email-hospital',
+      //   new EmailEvent(email, password),
+      // );
+      this.emailListener.handleSignupEventHos(email, password);
       return {
         message: 'Hospital created successfully',
         status: 200,

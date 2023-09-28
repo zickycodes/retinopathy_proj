@@ -12,7 +12,7 @@ import {
   //   Get,
   //   Param,
   UseGuards,
-  Request,
+  // Request,
   UsePipes,
   ValidationPipe,
   Get,
@@ -22,12 +22,13 @@ import { AdminGuard } from 'src/guards/admin.guard';
 import { Hospitaldto } from '../dto/hospital.dto';
 import { DoctorService } from '../services/doctor.service';
 import { HospitalService } from '../services/hospital.service';
+// import { OperatorService } from 'src/hospital/services/operator.service';
 
 @Controller('/superadmin')
 export class SuperAdminHosController {
   constructor(
     private doctorService: DoctorService,
-    private hospitalService: HospitalService,
+    private hospitalService: HospitalService, // private operatorService: OperatorService,
   ) {}
 
   @UseGuards(AdminGuard)
@@ -42,9 +43,23 @@ export class SuperAdminHosController {
   @UseGuards(AdminGuard)
   @Post('/add-hospital')
   @UsePipes(new ValidationPipe())
-  addHospital(@Body() body: Hospitaldto) {
-    // console.log(body);
-    return this.hospitalService.addHospital(body);
+  addHospital(@Body() body: any) {
+    const operator = {
+      first_name: body.first_name,
+      last_name: body.last_name,
+      phone_no: body.admin_contact_info,
+      password: body.password,
+      email: body.email,
+    };
+    const hospital = {
+      name: body.name,
+      address: body.address,
+      state: body.state,
+      email: body.email,
+      admin_contact_info: body.admin_contact_info,
+      password: body.password,
+    };
+    return this.hospitalService.addHospital(hospital, operator);
   }
 
   @UseGuards(AdminGuard)

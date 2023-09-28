@@ -4,12 +4,16 @@ import { Doctor } from 'src/entities/Doctors';
 import { Doctordto } from '../dto/doctor.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { EditDoctordto } from '../dto/editdoctor..dto';
+// import { EmailEvent } from 'src/email/events/emailevents';
+import { EmailListener } from 'src/email/services/email.listener';
+// import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class DoctorService {
   constructor(
     @InjectModel(Doctor)
     private doctor: typeof Doctor,
+    private emailListener: EmailListener,
   ) {}
 
   async showDoctors() {
@@ -43,7 +47,8 @@ export class DoctorService {
   async addDoctors(doctor: Doctordto) {
     try {
       const { email } = doctor;
-      const doc = this.doctor.findOne({ where: { email } });
+      const doc = await this.doctor.findOne({ where: { email } });
+      // console.log(doc);
       if (doc) {
         throw new BadRequestException('Doctor already exist');
       }
@@ -53,6 +58,8 @@ export class DoctorService {
         ...doctor,
         password: hashedPassword,
       });
+      // this.eventEmitter.emit('welcome-email', new EmailEvent(email, password));
+      await this.emailListener.handleSignupEvent(email, password);
       return {
         message: 'Doctor created successfully',
         status: 200,

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EmailListener } from './email.listener';
-// import { EmailListener } from 'src/email/email.event';
+import { EmailListener } from './services/email.listener';
 
 @Module({
   imports: [],

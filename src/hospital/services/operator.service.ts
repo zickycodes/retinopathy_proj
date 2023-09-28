@@ -45,7 +45,7 @@ export class OperatorService {
   async addOperators(operator: OperatorDto) {
     try {
       const { email } = operator;
-      const opera = this.operator.findOne({ where: { email } });
+      const opera = await this.operator.findOne({ where: { email } });
       if (opera) {
         throw new BadRequestException('Operator already exists');
       }

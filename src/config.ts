@@ -7,4 +7,6 @@ export default () => ({
   MYSQL_DB: process.env.MYSQL_DB,
   JWT_Secret: process.env.JWT_Secret,
   P0RT: process.env.PORT,
+  Mailer_User: process.env.Mailer_User,
+  Mailer_Pass: process.env.Mailer_Pass,
 });

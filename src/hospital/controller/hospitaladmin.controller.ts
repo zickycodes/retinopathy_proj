@@ -11,7 +11,7 @@ import {
   Get,
   Param,
   UseGuards,
-  Request,
+  // Request,
   Delete,
   UseInterceptors,
   HttpException,
@@ -21,7 +21,7 @@ import {
 // import { LoginDto } from '../dto/logindto';
 // import { AuthService } from '../services/auth.service';
 import { AdminGuard } from 'src/guards/admin.guard';
-import { HospitalService } from 'src/superadmin/services/hospital.service';
+// import { HospitalService } from 'src/superadmin/services/hospital.service';
 import { HospitalAdminGuard } from 'src/guards/hospitaladmin.guard';
 import { OperatorDto } from '../dto/operatordto';
 import { PatientDto } from '../dto/patientdto';
@@ -32,6 +32,7 @@ import { PatientRecordDto } from '../dto/patientsrecorddto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { OperatorGuard } from 'src/guards/operator.guard';
 // import { AuthGuard } from '../services/auth.guard';
 
 @Controller('/hospital-admin')
@@ -77,7 +78,7 @@ export class HospitalController {
   }
 
   // Patient Controller errors
-  @UseGuards(HospitalAdminGuard)
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   @Get('/get-patient')
   showPatient(@Query('id') id: string) {
     if (id) {
@@ -86,8 +87,8 @@ export class HospitalController {
     return this.patientService.showPatients();
   }
 
-  @UseGuards(HospitalAdminGuard)
   @Post('/add-patients')
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   @UsePipes(new ValidationPipe())
   addPatients(@Body() body: PatientDto) {
     // console.log(body);
@@ -95,7 +96,7 @@ export class HospitalController {
   }
 
   @Put('/edit-patient')
-  @UseGuards(HospitalAdminGuard)
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   @UsePipes(new ValidationPipe())
   editPatient(@Body() body: PatientDto, @Param() param: any) {
     // console.log(body);
@@ -103,15 +104,15 @@ export class HospitalController {
   }
 
   @Delete('/delete-patient/:id')
-  @UseGuards(HospitalAdminGuard)
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   deletePatient(@Param() param: any) {
     // console.log(body);
     return this.patientService.deletePatient(param.id);
   }
 
   // Patients_Records
-  // @UseGuards(HospitalAdminGuard)
   @Post('/add-record')
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   @UsePipes(new ValidationPipe())
   @UseInterceptors(
     FileInterceptor('patient_pic', {
@@ -138,26 +139,27 @@ export class HospitalController {
       throw new HttpException(
         {
           statusCode: 402,
-          error: 'Only accept PDF files',
+          error: 'No file uploaded',
         },
         402,
       );
     }
-    console.log(file.name);
+    console.log(file.path);
     console.log(body);
     // return this.patientRecordService.addRecord(body);
   }
 
   @Put('/edit-record')
-  @UseGuards(HospitalAdminGuard)
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   @UsePipes(new ValidationPipe())
   editRecord(@Body() body: PatientRecordDto, @Param() param: any) {
+    // const filePath = file ? file.path : 'No file uploaded';
     // console.log(body);
     return this.patientRecordService.editRecord(param.id, body);
   }
 
   @Delete('/delete-record/:id')
-  @UseGuards(HospitalAdminGuard)
+  @UseGuards(HospitalAdminGuard || OperatorGuard)
   deleteRecord(@Param() param: any) {
     // console.log(body);
     return this.patientRecordService.deleteRecord(param.id);

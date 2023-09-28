@@ -2,19 +2,24 @@ import {
   Table,
   Column,
   Model,
+  BelongsTo,
   //   HasOne,
   //   BelongsToMany,
+  ForeignKey,
 } from 'sequelize-typescript';
+import { PatientRecord } from './Patients_record';
 
 @Table
-export class Operator extends Model {
+export class PatientDiagnosis extends Model {
+  @ForeignKey(() => PatientRecord)
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
+    unique: true,
     validate: {
       notNull: { msg: 'Email is required' }, // add a validation message
     },
   })
-  name: string;
+  patient_record_id: number;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -22,21 +27,8 @@ export class Operator extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  address: string;
+  patient_results: string;
 
-  @Column({
-    allowNull: false, // set the allowNull option to false to enforce not null constraint
-    validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
-    },
-  })
-  email: string;
-
-  @Column({
-    allowNull: false, // set the allowNull option to false to enforce not null constraint
-    validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
-    },
-  })
-  password: string;
+  @BelongsTo(() => PatientRecord)
+  patient_record: PatientRecord;
 }

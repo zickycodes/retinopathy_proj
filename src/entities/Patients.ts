@@ -1,5 +1,6 @@
 // import { Model } from 'sequelize';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import { PatientRecord } from './Patients_record';
 
 @Table
 export class Patient extends Model {
@@ -91,4 +92,7 @@ export class Patient extends Model {
     },
   })
   phone_no_of_nok: string;
+
+  @HasMany(() => PatientRecord)
+  patient_records: PatientRecord[];
 }
