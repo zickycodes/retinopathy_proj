@@ -9,6 +9,8 @@ import { HospitalController } from './controller/hospitaladmin.controller';
 import { OperatorService } from './services/operator.service';
 import { PatientRecordService } from './services/patients_record.service';
 import { PatientService } from './services/patients.service';
+import { EmailListener } from 'src/email/services/email.listener';
+// import { HospitalOperatorController } from './controller/operatoradmin.controller';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { PatientService } from './services/patients.service';
     OperatorService,
     PatientRecordService,
     PatientService,
+    EmailListener,
   ],
 })
 export class HospitalAdminModule {}

@@ -6,6 +6,7 @@ import { Operator } from 'src/entities/Operators';
 import { Hospital } from 'src/entities/Hospital';
 import { SignUpDto } from '../dto/signupdto';
 import * as bcrypt from 'bcrypt';
+import { QueryInterface, QueryTypes } from 'sequelize';
 // import { User } from 'src/entities/User';
 
 @Injectable()
@@ -30,15 +31,6 @@ export class Userservice {
   //   return res;
   // }
   async findOne(userdetail: any, identity: string): Promise<any> {
-    // console.log(userdetail);
-    // console.log(identity);
-    // return await this.userModel.sequelize.query(
-    //   'SELECT * FROM "Users" WHERE email = ?',
-    //   {
-    //     replacements: [email],
-    //     type: QueryTypes.SELECT,
-    //   },
-    // );
     try {
       if (identity === 'admin') {
         // console.log('ksh');
@@ -48,35 +40,58 @@ export class Userservice {
             // password: userdetail.password,
           },
         });
+        // console.log(user);
         return {
           role: 'admin',
-          user,
+          password: user ? user.password : null,
+          user: user ? user : null,
+          id: user ? user.id : null,
+          email: user ? user.email : null,
         };
       }
 
-      if (identity === 'hospitaladmin') {
-        const user = await this.hospitaladmin.findOne({
-          where: {
-            email: userdetail.email,
-            // password: userdetail.password,
-          },
-        });
+      if (identity === 'hospital-admin') {
+        const hospitaladmin = (await this.hospitaladmin.sequelize.query(
+          `SELECT H.h_id AS id, H.h_name as name, H.h_email AS email, H.h_password AS password, O.o_id AS op_id FROM Hospitals AS H JOIN Operators AS O ON H.h_id = O.o_hospital_id WHERE H.h_email = ?`,
+          { replacements: [userdetail.email], type: QueryTypes.SELECT },
+        )) as {
+          password: string;
+          op_id: number;
+          id: number;
+          email: string;
+          name: string;
+        }[];
+
         return {
-          role: 'hospitaladmin',
-          user,
+          role: 'hospital-admin',
+          password: hospitaladmin[0] ? hospitaladmin[0].password : null,
+          op_id: hospitaladmin[0] ? hospitaladmin[0].op_id : null,
+          hos_id: hospitaladmin[0] ? hospitaladmin[0].id : null,
+          email: hospitaladmin[0] ? hospitaladmin[0].email : null,
+          user: hospitaladmin[0] ? hospitaladmin[0] : null,
+          name: hospitaladmin[0] ? hospitaladmin[0].name : null,
         };
       }
 
       if (identity === 'operator') {
-        const user = await this.operator.findOne({
-          where: {
-            email: userdetail.email,
-            // password: userdetail.password,
-          },
-        });
+        const operator = (await this.hospitaladmin.sequelize.query(
+          `SELECT O.o_id AS op_id, O.o_email AS email, O.o_first_name AS name, H.h_password AS password, H.h_id AS hos_id FROM Hospitals AS H JOIN Operators AS O ON H.h_id = O.o_hospital_id WHERE O.o_email = ?`,
+          { replacements: [userdetail.email], type: QueryTypes.SELECT },
+        )) as {
+          password: string;
+          op_id: number;
+          hos_id: number;
+          email: string;
+          name: string;
+        }[];
         return {
           role: 'operator',
-          user,
+          name: operator[0].name,
+          password: operator[0].password,
+          email: operator[0].email,
+          op_id: operator[0].op_id,
+          hos_id: operator[0].hos_id,
+          user: operator ? operator : null,
         };
       }
 
@@ -84,13 +99,17 @@ export class Userservice {
         // console.log('hfh');
         const user = await this.doctor.findOne({
           where: {
-            email: userdetail.email,
+            d_email: userdetail.email,
             // password: userdetail.password,
           },
         });
         return {
           role: 'doctor',
-          user,
+          user: user ? user : null,
+          password: user ? user.d_password : null,
+          id: user ? user.d_id : null,
+          email: user ? user.d_email : null,
+          name: user ? user.d_first_name : null,
         };
       }
     } catch (e) {
@@ -104,7 +123,7 @@ export class Userservice {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       if (identity === 'admin') {
-        console.log('ksh');
+        // console.log('ksh');
 
         const res = await this.superAdminModel.create({
           ...userDetails,

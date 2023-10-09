@@ -4,6 +4,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  Request,
   // UseGuards,
   UsePipes,
   UploadedFile,
@@ -33,6 +35,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { OperatorGuard } from 'src/guards/operator.guard';
+import { EditOperatorDto } from '../dto/editoperatordto';
 // import { AuthGuard } from '../services/auth.guard';
 
 @Controller('/hospital-admin')
@@ -47,56 +50,58 @@ export class HospitalController {
 
   @UseGuards(HospitalAdminGuard)
   @Get('/get-operator')
-  showDoctors(@Query('id') id: string) {
+  showOperator(@Query('id') id: number, @Request() req) {
     if (id) {
       return this.operatorService.showOperator(id);
     }
-    return this.operatorService.showOperators();
+    return this.operatorService.showOperators(req.user.hos_id);
   }
 
   @UseGuards(HospitalAdminGuard)
   @Post('/add-operator')
   @UsePipes(new ValidationPipe())
-  addDoctors(@Body() body: OperatorDto) {
+  addOperator(@Body() body: OperatorDto, @Req() req) {
     // console.log(body);
+    // console.log(req.user);
+    // body['id'] = req.user.sub;
     return this.operatorService.addOperators(body);
   }
 
-  @UseGuards(AdminGuard)
-  @Put('/edit-operators/:id')
+  @UseGuards(HospitalAdminGuard)
+  @Put('/edit-operator/:id')
   @UsePipes(new ValidationPipe())
-  editDoctors(@Body() body: OperatorDto, @Param() param: any) {
+  editOperator(@Body() body: EditOperatorDto, @Param() param: any) {
     // console.log(body);
     return this.operatorService.editOperators(param.id, body);
   }
 
   @UseGuards(HospitalAdminGuard)
   @Delete('/delete-operator/:id')
-  deleteDoctors(@Body() body: OperatorDto, @Param() param: any) {
+  deleteOperators(@Body() body: OperatorDto, @Param() param: any) {
     // console.log(body);
     return this.operatorService.deleteOperator(param.id);
   }
 
   // Patient Controller errors
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @UseGuards(OperatorGuard)
   @Get('/get-patient')
-  showPatient(@Query('id') id: string) {
+  showPatient(@Query('id') id: string, @Request() req) {
     if (id) {
       return this.patientService.showPatient(id);
     }
-    return this.patientService.showPatients();
+    return this.patientService.showPatients(req.user.hos_id);
   }
 
-  @Post('/add-patients')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @Post('/add-patient')
+  @UseGuards(OperatorGuard)
   @UsePipes(new ValidationPipe())
-  addPatients(@Body() body: PatientDto) {
+  addPatients(@Body() body: PatientDto, @Request() req) {
     // console.log(body);
-    return this.patientService.addPatients(body);
+    return this.patientService.addPatients(body, req.user.op_id);
   }
 
-  @Put('/edit-patient')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @Put('/edit-patient/:id')
+  @UseGuards(OperatorGuard)
   @UsePipes(new ValidationPipe())
   editPatient(@Body() body: PatientDto, @Param() param: any) {
     // console.log(body);
@@ -104,66 +109,111 @@ export class HospitalController {
   }
 
   @Delete('/delete-patient/:id')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @UseGuards(OperatorGuard)
   deletePatient(@Param() param: any) {
     // console.log(body);
     return this.patientService.deletePatient(param.id);
   }
 
   // Patients_Records
+
+  // @Post('/add-record')
+  // @UseGuards(OperatorGuard)
+  // @UsePipes(new ValidationPipe())
+  // @UseInterceptors(
+  //   FileInterceptor('patient_pic', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, cb) => {
+  //         cb(null, new Date().toISOString() + '-' + file.originalname);
+  //       },
+  //     }),
+  //     limits: {
+  //       fileSize: 1.5 * 1024 * 1024, // 1.5MB limit
+  //     },
+  //   }),
+  // )
+  // addRecord(@Body() body: PatientRecordDto, @UploadedFile() file) {
+  //   // console.log(body);
+  //   if (file === undefined) {
+  //     throw new HttpException(
+  //       {
+  //         statusCode: 402,
+  //         error: 'No file uploaded',
+  //       },
+  //       402,
+  //     );
+  //   }
+  //   console.log(file);
+  //   return this.patientRecordService.addRecord(body, file.path);
+  // }
   @Post('/add-record')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @UseGuards(OperatorGuard)
   @UsePipes(new ValidationPipe())
-  @UseInterceptors(
-    FileInterceptor('patient_pic', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          cb(null, new Date().toISOString() + '-' + file.originalname);
-        },
-      }),
-      fileFilter: (req, file, cb) => {
-        if (extname(file.originalname).toLowerCase() !== '.pdf') {
-          return cb(null, false);
-        }
-        cb(null, true);
-      },
-      limits: {
-        fileSize: 1.5 * 1024 * 1024, // 1.5MB limit
-      },
-    }),
-  )
-  addRecord(@Body() body: PatientRecordDto, @UploadedFile() file) {
-    // console.log(body);
-    if (file === undefined) {
-      throw new HttpException(
-        {
-          statusCode: 402,
-          error: 'No file uploaded',
-        },
-        402,
-      );
-    }
-    console.log(file.path);
-    console.log(body);
-    // return this.patientRecordService.addRecord(body);
+  addRecord(@Body() body: PatientRecordDto, @Request() req) {
+    // console.log(req.user.op_id);
+    return this.patientRecordService.addRecord(body, req.user.op_id);
   }
 
-  @Put('/edit-record')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @UseGuards(OperatorGuard)
+  @Get('/get-record')
+  showRecord(@Query('id') id: string, @Request() req) {
+    if (id) {
+      return this.patientRecordService.showRecord(id);
+    }
+    return this.patientRecordService.showRecords(req.user.hos_id);
+  }
+
+  @UseGuards(OperatorGuard)
   @UsePipes(new ValidationPipe())
-  editRecord(@Body() body: PatientRecordDto, @Param() param: any) {
+  @Put('/edit-record/:id')
+  editRecord(
+    @Body() body: PatientRecordDto,
+    @Param() param: any,
+    @Request() req,
+    // @UploadedFile() file,
+  ) {
     // const filePath = file ? file.path : 'No file uploaded';
     // console.log(body);
-    return this.patientRecordService.editRecord(param.id, body);
+    return this.patientRecordService.editRecord(param.id, body, req.user.op_id);
   }
 
   @Delete('/delete-record/:id')
-  @UseGuards(HospitalAdminGuard || OperatorGuard)
+  @UseGuards(OperatorGuard)
   deleteRecord(@Param() param: any) {
     // console.log(body);
     return this.patientRecordService.deleteRecord(param.id);
   }
+
+  // @UseGuards(OperatorGuard)
+  // @UsePipes(new ValidationPipe())
+  // @UseInterceptors(
+  //   FileInterceptor('patient_pic', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, cb) => {
+  //         cb(null, new Date().toISOString() + '-' + file.originalname);
+  //       },
+  //     }),
+  //     limits: {
+  //       fileSize: 1.5 * 1024 * 1024, // 1.5MB limit
+  //     },
+  //   }),
+  // )
+  // @Put('/edit-record/:id')
+  // editRecord(
+  //   @Body() body: PatientRecordDto,
+  //   @Param() param: any,
+  //   @UploadedFile() file,
+  // ) {
+  //   // const filePath = file ? file.path : 'No file uploaded';
+  //   // console.log(body);
+  //   return this.patientRecordService.editRecord(
+  //     param.id,
+  //     body,
+  //     file ? file.path : null,
+  //   );
+  // }
 
   // @UseGuards(HospitalAdminGuard)
   // @Post('/add-file')

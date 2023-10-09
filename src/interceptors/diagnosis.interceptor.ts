@@ -29,12 +29,8 @@ export class DiagnosisInterceptor implements NestInterceptor {
         },
       });
       if (diagnosis) {
-        throw new HttpException(
-          {
-            statusCode: 402,
-            error: '',
-          },
-          402,
+        throw new BadRequestException(
+          "Patient's Record already has a diagnosis",
         );
       }
     } catch (e) {

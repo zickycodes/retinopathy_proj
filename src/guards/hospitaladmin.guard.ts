@@ -26,8 +26,8 @@ export class HospitalAdminGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('JWT_Secret'),
       });
-      //   console.log('PAYLOAD', payload);
-      if (payload.role !== 'hospitaladmin') {
+      // console.log('PAYLOAD', payload);
+      if (payload.role !== 'hospital-admin') {
         throw new UnauthorizedException('You are not an hospital admin');
       }
       // 💡 We're assigning the payload to the request object here

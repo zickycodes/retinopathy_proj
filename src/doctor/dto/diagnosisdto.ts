@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class patientresultdto {
+export class patientdiagnosisdto {
   @IsNotEmpty()
   @IsNumber()
   patient_record_id: number;
@@ -8,12 +8,12 @@ export class patientresultdto {
   // @IsString()
   // patient_pic: string;
   @IsNotEmpty()
-  @IsNumber()
-  doctor_id: number;
+  @IsString()
+  patient_results: string;
   @IsNotEmpty()
   @IsString()
-  doctor_comment: string;
-  @IsNotEmpty()
-  @IsNumber()
-  doctors_assessment: number;
+  comments: string;
+  //   @IsNotEmpty()
+  //   @IsNumber()
+  //   doctors_assessment: number;
 }

@@ -3,6 +3,7 @@ import {
   Table,
   Column,
   Model,
+  PrimaryKey,
   //   HasOne,
   BelongsToMany,
 } from 'sequelize-typescript';
@@ -11,13 +12,19 @@ import { PatientResult } from './Patients_results';
 
 @Table
 export class Doctor extends Model {
+  @PrimaryKey // Decorate the primary key column with PrimaryKey decorator
+  @Column({
+    allowNull: false,
+    autoIncrement: true, // Add autoIncrement for auto-incrementing primary key
+  })
+  d_id: number;
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
       notNull: { msg: 'Email is required' }, // add a validation message
     },
   })
-  first_name: string;
+  d_first_name: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -25,7 +32,7 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  last_name: string;
+  d_last_name: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -34,7 +41,7 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  email: string;
+  d_email: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -42,7 +49,7 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  password: string;
+  d_password: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -50,7 +57,7 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  phone_no: string;
+  d_phone_no: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -58,7 +65,7 @@ export class Doctor extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  address: string;
+  d_address: string;
 
   @BelongsToMany(() => PatientRecord, () => PatientResult)
   patient_records: PatientRecord[];

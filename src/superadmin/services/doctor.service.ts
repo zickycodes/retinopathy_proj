@@ -20,12 +20,12 @@ export class DoctorService {
     try {
       const doctors = await this.doctor.findAll();
       const doctorData = doctors.map((doctor) => ({
-        id: doctor.id,
-        first_name: doctor.first_name,
-        last_name: doctor.last_name,
-        phone_no: doctor.phone_no,
-        address: doctor.address,
-        email: doctor.email,
+        id: doctor.d_id,
+        first_name: doctor.d_first_name,
+        last_name: doctor.d_last_name,
+        phone_no: doctor.d_phone_no,
+        address: doctor.d_address,
+        email: doctor.d_email,
       }));
       return doctorData;
     } catch (e) {
@@ -36,7 +36,7 @@ export class DoctorService {
     try {
       return await this.doctor.findOne({
         where: {
-          id,
+          d_id: id,
         },
       });
     } catch (e) {
@@ -46,26 +46,26 @@ export class DoctorService {
 
   async addDoctors(doctor: Doctordto) {
     try {
-      const { email } = doctor;
-      const doc = await this.doctor.findOne({ where: { email } });
+      const { d_email } = doctor;
+      const doc = await this.doctor.findOne({ where: { d_email } });
       // console.log(doc);
       if (doc) {
         throw new BadRequestException('Doctor already exist');
       }
-      const password = doctor.password;
+      const password = doctor.d_password;
       const hashedPassword = await bcrypt.hash(password, 10);
       const res = await this.doctor.create({
         ...doctor,
-        password: hashedPassword,
+        d_password: hashedPassword,
       });
       // this.eventEmitter.emit('welcome-email', new EmailEvent(email, password));
-      await this.emailListener.handleSignupEvent(email, password);
+      await this.emailListener.handleSignupEvent(d_email, password);
       return {
         message: 'Doctor created successfully',
         status: 200,
         res: {
-          id: res.id,
-          email: res.email,
+          id: res.d_id,
+          email: res.d_email,
         },
       };
     } catch (e) {
@@ -77,7 +77,7 @@ export class DoctorService {
     try {
       // 'Doctor has been deleted successfully',
       // console.log(body);
-      await await this.doctor.update({ ...body }, { where: { id } });
+      await await this.doctor.update({ ...body }, { where: { d_id: id } });
       return {
         data: {
           message: 'Doctor detail has been updated successfully',
@@ -91,7 +91,7 @@ export class DoctorService {
   async deleteDoctor(id: number) {
     try {
       // 'Doctor has been deleted successfully',
-      await this.doctor.destroy({ where: { id } });
+      await this.doctor.destroy({ where: { d_id: id } });
       return {
         message: {
           data: 'Doctor has been deleted successfully',

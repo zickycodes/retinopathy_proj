@@ -26,13 +26,17 @@ export class OperatorGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('JWT_Secret'),
       });
-      //   console.log('PAYLOAD', payload);
-      if (payload.role !== 'operator') {
-        throw new UnauthorizedException('You are not a Doctor');
+      // console.log('PAYLOAD', payload);
+      // if (payload.role !== 'operator' || payload.role !== 'hospitaladmin') {
+      //   throw new UnauthorizedException('You are not authorized to do this');
+      // }
+      if (payload.role === 'operator' || payload.role === 'hospital-admin') {
+        request['user'] = payload;
+      } else {
+        throw new UnauthorizedException('You are not authorized to do this');
       }
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = payload;
     } catch {
       throw new UnauthorizedException();
     }

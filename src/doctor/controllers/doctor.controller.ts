@@ -13,16 +13,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { DoctorGuard } from 'src/guards/doctor.guard';
-import { DoctorService } from '../services/doctor.service';
-import { patientresultdto } from '../dto/diagnosis.dto';
+import { DoctorSService } from '../services/doctor.service';
+import { patientresultdto } from '../dto/patientresDto';
 import { DiagnosisInterceptor } from 'src/interceptors/diagnosis.interceptor';
 
 @Controller('/doctor')
 export class DoctorController {
-  constructor(private doctorService: DoctorService) {}
+  constructor(private doctorService: DoctorSService) {}
 
   @UseGuards(DoctorGuard)
-  @Get('/newrecord')
+  @Get('/new-record')
   showNewRecord() {
     return this.doctorService.showNewPatients();
   }
@@ -30,20 +30,21 @@ export class DoctorController {
   @UseGuards(DoctorGuard)
   @Get('/one-time-patients')
   oneTime(@Request() req) {
-    return this.doctorService.oneTimePatients(req.id);
+    // console.log(req.user.sub);
+    return this.doctorService.oneTimePatients(req.user.sub);
   }
 
   @UseGuards(DoctorGuard)
-  @Get('/inconclusive-patients/id')
+  @Get('/inconclusive-patients/')
   inconclusives(@Request() req) {
-    return this.doctorService.inconclusivePatient(req.id);
+    return this.doctorService.inconclusivePatient(req.user.sub);
   }
 
   @UseGuards(DoctorGuard)
   @UseInterceptors(DiagnosisInterceptor)
   @UsePipes(new ValidationPipe())
   @Post('/give-diagnosis')
-  giveDiagnosis(@Body() body: patientresultdto) {
-    return this.doctorService.givePatientDiagnosis(body);
+  giveDiagnosis(@Body() body: patientresultdto, @Request() req) {
+    return this.doctorService.givePatientDiagnosis(body, req.user.sub);
   }
 }

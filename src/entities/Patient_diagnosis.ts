@@ -16,7 +16,7 @@ export class PatientDiagnosis extends Model {
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     unique: true,
     validate: {
-      notNull: { msg: 'Email is required' }, // add a validation message
+      notNull: { msg: 'Patient_Record Id required' }, // add a validation message
     },
   })
   patient_record_id: number;
@@ -24,11 +24,22 @@ export class PatientDiagnosis extends Model {
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Patient Results is required' }, // add a validation message
     },
   })
   patient_results: string;
 
-  @BelongsTo(() => PatientRecord)
+  @Column({
+    allowNull: false, // set the allowNull option to false to enforce not null constraint
+    validate: {
+      notNull: { msg: 'Comments is required' }, // add a validation message
+    },
+  })
+  comments: string;
+
+  @BelongsTo(() => PatientRecord, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
   patient_record: PatientRecord;
 }

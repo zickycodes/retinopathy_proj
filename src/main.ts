@@ -20,11 +20,11 @@ async function bootstrap() {
     await sequelize.authenticate();
     console.log('Connected to the database');
     // const configService = new ConfigService();
-    // await app.listen(3000, '192.168.204.101');
-    await app.listen(3000);
+    await app.listen(3000, '192.168.1.126');
+    // await app.listen(3000);
     // app.enableCors();
     console.log('Application started');
-    await sequelize.sync();
+    await sequelize.sync({});
   } catch (err) {
     console.log('Failed to connect to the database:', err);
     return;

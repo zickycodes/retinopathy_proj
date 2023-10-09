@@ -1,13 +1,16 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class PatientRecordDto {
   @IsNotEmpty()
-  @IsString()
-  patient_id: string;
-  // @IsNotEmpty()
-  // @IsString()
-  // patient_pic: string;
+  @IsNumber()
+  patientId: number;
   @IsNotEmpty()
   @IsString()
-  comment: string;
+  patient_pic: string;
+  @IsNotEmpty()
+  @IsString()
+  pr_complaint: string;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // operator_id: number;
 }

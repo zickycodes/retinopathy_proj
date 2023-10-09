@@ -3,17 +3,17 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class Doctordto {
   @IsNotEmpty()
   @IsString()
-  first_name: string;
+  d_first_name: string;
   @IsNotEmpty()
   @IsString()
-  last_name: string;
+  d_last_name: string;
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  d_email: string;
   @IsNotEmpty()
-  password: string;
+  d_password: string;
   @IsNotEmpty()
-  address: string;
+  d_address: string;
   @IsNotEmpty()
-  phone_no: string;
+  d_phone_no: string;
 }

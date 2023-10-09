@@ -25,11 +25,11 @@ export class HospitalService {
     try {
       const hospital = await this.hospital.findAll();
       const hospitalData = hospital.map((hospital) => ({
-        id: hospital.id,
-        name: hospital.name,
-        email: hospital.email,
-        phone_no: hospital.admin_contact_info,
-        state: hospital.state,
+        id: hospital.h_id,
+        name: hospital.h_name,
+        email: hospital.h_email,
+        phone_no: hospital.h_admin_contact_info,
+        state: hospital.h_state,
       }));
       return hospitalData;
     } catch (e) {
@@ -41,7 +41,7 @@ export class HospitalService {
     try {
       return await this.hospital.findOne({
         where: {
-          id,
+          h_id: id,
         },
       });
     } catch (e) {
@@ -50,33 +50,33 @@ export class HospitalService {
   }
   async addHospital(hospital: Hospitaldto, operator: any) {
     try {
-      const { email } = hospital;
-      const hos = await this.hospital.findOne({ where: { email } });
-      console.log('hos', hos);
+      const { h_email } = hospital;
+      const hos = await this.hospital.findOne({ where: { h_email } });
+      // console.log('hos', hos);
       if (hos) {
         throw new BadRequestException('Hospital already exists');
       }
-      const password = hospital.password;
+      const password = hospital.h_password;
       const hashedPassword = await bcrypt.hash(password, 10);
       const res = await this.hospital.create({
         ...hospital,
-        password: hashedPassword,
+        h_password: hashedPassword,
       });
       await this.operatorService.addOperators({
         ...operator,
-        hospital_id: res.id,
+        o_hospital_id: res.h_id,
       });
       // this.eventEmitter.emit(
       //   'welcome-email-hospital',
       //   new EmailEvent(email, password),
       // );
-      this.emailListener.handleSignupEventHos(email, password);
+      this.emailListener.handleSignupEventHos(h_email, password);
       return {
         message: 'Hospital created successfully',
         status: 200,
         res: {
-          id: res.id,
-          email: res.email,
+          id: res.h_id,
+          email: res.h_email,
         },
       };
     } catch (e) {
@@ -84,12 +84,12 @@ export class HospitalService {
     }
   }
   async editHospital(id: string, body: EditHospitaldto) {
-    return await this.hospital.update({ ...body }, { where: { id } });
+    return await this.hospital.update({ ...body }, { where: { h_id: id } });
   }
 
   async deleteHospital(id: number) {
     try {
-      await this.hospital.destroy({ where: { id } });
+      await this.hospital.destroy({ where: { h_id: id } });
       return {
         data: 'Hospital has been deleted successfully',
       };

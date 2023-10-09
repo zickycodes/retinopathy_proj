@@ -22,6 +22,7 @@ import { AdminGuard } from 'src/guards/admin.guard';
 import { Hospitaldto } from '../dto/hospital.dto';
 import { DoctorService } from '../services/doctor.service';
 import { HospitalService } from '../services/hospital.service';
+import { EditHospitaldto } from '../dto/edithospital.dto';
 // import { OperatorService } from 'src/hospital/services/operator.service';
 
 @Controller('/superadmin')
@@ -44,20 +45,21 @@ export class SuperAdminHosController {
   @Post('/add-hospital')
   @UsePipes(new ValidationPipe())
   addHospital(@Body() body: any) {
+    // console.log(body);
     const operator = {
-      first_name: body.first_name,
-      last_name: body.last_name,
-      phone_no: body.admin_contact_info,
-      password: body.password,
-      email: body.email,
+      o_first_name: body.h_first_name,
+      o_last_name: body.h_last_name,
+      o_phone_no: body.h_admin_contact_info,
+      o_password: body.h_password,
+      o_email: body.h_email,
     };
     const hospital = {
-      name: body.name,
-      address: body.address,
-      state: body.state,
-      email: body.email,
-      admin_contact_info: body.admin_contact_info,
-      password: body.password,
+      h_name: body.h_name,
+      h_address: body.h_address,
+      h_state: body.h_state,
+      h_email: body.h_email,
+      h_admin_contact_info: body.h_admin_contact_info,
+      h_password: body.h_password,
     };
     return this.hospitalService.addHospital(hospital, operator);
   }
@@ -65,7 +67,7 @@ export class SuperAdminHosController {
   @UseGuards(AdminGuard)
   @Put('/edit-hospital/:id')
   @UsePipes(new ValidationPipe())
-  editHospital(@Body() body: Hospitaldto, @Param() param: any) {
+  editHospital(@Body() body: EditHospitaldto, @Param() param: any) {
     // console.log(body);
     return this.hospitalService.editHospital(param.id, body);
   }

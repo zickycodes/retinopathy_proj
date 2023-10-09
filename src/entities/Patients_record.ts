@@ -7,6 +7,7 @@ import {
   ForeignKey,
   BelongsToMany,
   DataType,
+  PrimaryKey,
 } from 'sequelize-typescript';
 import { Patient } from './Patients';
 import { Operator } from './Operators';
@@ -17,6 +18,13 @@ import { PatientDiagnosis } from './Patient_diagnosis';
 
 @Table
 export class PatientRecord extends Model {
+  @PrimaryKey // Decorate the primary key column with PrimaryKey decorator
+  @Column({
+    allowNull: false,
+    autoIncrement: true, // Add autoIncrement for auto-incrementing primary key
+  })
+  pr_id: number;
+
   @ForeignKey(() => Patient)
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -50,12 +58,18 @@ export class PatientRecord extends Model {
       notNull: { msg: 'Comments is required' }, // add a validation message
     },
   })
-  comments: string;
+  pr_complaint: string;
 
-  @HasOne(() => PatientDiagnosis)
+  @HasOne(() => PatientDiagnosis, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
   patient_diagnosis: PatientDiagnosis;
 
-  @BelongsTo(() => Patient)
+  @BelongsTo(() => Patient, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
   patient: Patient;
 
   @BelongsTo(() => Operator)

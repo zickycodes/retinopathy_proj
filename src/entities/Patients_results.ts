@@ -5,6 +5,7 @@ import {
   ForeignKey,
   Index,
   DataType,
+  PrimaryKey,
   //   HasOne,
   //   BelongsToMany,
 } from 'sequelize-typescript';
@@ -14,6 +15,13 @@ import { Doctor } from './Doctors';
 
 @Table
 export class PatientResult extends Model {
+  @PrimaryKey // Decorate the primary key column with PrimaryKey decorator
+  @Column({
+    allowNull: false,
+    autoIncrement: true, // Add autoIncrement for auto-incrementing primary key
+  })
+  pre_id: number;
+
   @ForeignKey(() => PatientRecord)
   @Index
   @Column({

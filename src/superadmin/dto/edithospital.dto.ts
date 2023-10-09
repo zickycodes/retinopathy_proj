@@ -2,15 +2,15 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class EditHospitaldto {
   @IsString()
-  name: string;
+  h_name: string;
   @IsNotEmpty()
   @IsString()
-  address: string;
+  h_address: string;
   @IsString()
-  state: string;
+  h_state: string;
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  h_email: string;
   @IsNotEmpty()
-  admin_contact_info: string;
+  h_admin_contact_info: string;
 }

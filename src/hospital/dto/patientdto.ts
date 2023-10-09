@@ -3,26 +3,26 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class PatientDto {
   @IsNotEmpty()
   @IsString()
-  first_name: string;
+  p_first_name: string;
   @IsNotEmpty()
   @IsString()
-  last_name: string;
+  p_last_name: string;
   @IsNotEmpty()
   @IsString()
   @IsEmail()
-  email: string;
+  p_email: string;
   @IsNotEmpty()
-  dob: string;
+  p_dob: string;
   @IsNotEmpty()
-  phone_no: string;
+  p_phone_no: string;
   @IsNotEmpty()
-  state: string;
+  p_state: string;
   @IsNotEmpty()
-  lga: string;
+  p_lga: string;
   @IsNotEmpty()
-  nok: string;
+  p_nok: string;
   @IsNotEmpty()
-  relationship_with_nok: string;
+  p_relationship_with_nok: string;
   @IsNotEmpty()
-  phone_no_of_nok: string;
+  p_phone_no_of_nok: string;
 }

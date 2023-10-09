@@ -1,24 +1,42 @@
 // import { Model } from 'sequelize';
-import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  HasMany,
+  DataType,
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
+
 import { PatientRecord } from './Patients_record';
+import { Operator } from './Operators';
 
 @Table
 export class Patient extends Model {
+  @PrimaryKey // Decorate the primary key column with PrimaryKey decorator
+  @Column({
+    allowNull: false,
+    autoIncrement: true, // Add autoIncrement for auto-incrementing primary key
+  })
+  p_id: number;
+
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
       notNull: { msg: 'Email is required' }, // add a validation message
     },
   })
-  first_name: string;
+  p_first_name: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Last name is required' }, // add a validation message
     },
   })
-  last_name: string;
+  p_last_name: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
@@ -27,72 +45,91 @@ export class Patient extends Model {
       notNull: { msg: 'Password is required' }, // add a validation message
     },
   })
-  email: string;
+  p_email: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Address is required' }, // add a validation message
     },
   })
-  address: string;
+  p_address: string;
+
+  @Column({
+    allowNull: false,
+    type: DataType.DATE, // Set the type to DataType.DATE for a DATE field
+    validate: {
+      notNull: { msg: 'Date of Birth is required' },
+    },
+  })
+  p_dob: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Phone no is required' }, // add a validation message
     },
   })
-  dob: string;
+  p_phone_no: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'State of is required' }, // add a validation message
     },
   })
-  phone_no: string;
+  p_state: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Local government is required' }, // add a validation message
     },
   })
-  state: string;
+  p_lga: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Next of kin is required' }, // add a validation message
     },
   })
-  lga: string;
+  p_nok: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Relationship with Next of kin is required' }, // add a validation message
     },
   })
-  nok: string;
+  p_relationship_with_nok: string;
 
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Phone no of next of kin is required' }, // add a validation message
     },
   })
-  Relationship_with_nok: string;
+  p_phone_no_of_nok: string;
 
+  @ForeignKey(() => Operator)
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     validate: {
-      notNull: { msg: 'Password is required' }, // add a validation message
+      notNull: { msg: 'Operator id required' }, // add a validation message
     },
   })
-  phone_no_of_nok: string;
+  p_operator_id: number;
 
-  @HasMany(() => PatientRecord)
+  @HasMany(() => PatientRecord, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
   patient_records: PatientRecord[];
+
+  @BelongsTo(() => Operator, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
+  operator: Operator;
 }
