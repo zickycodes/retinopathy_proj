@@ -24,7 +24,7 @@ async function bootstrap() {
     // await app.listen(3000);
     // app.enableCors();
     console.log('Application started');
-    await sequelize.sync({});
+    await sequelize.sync();
   } catch (err) {
     console.log('Failed to connect to the database:', err);
     return;

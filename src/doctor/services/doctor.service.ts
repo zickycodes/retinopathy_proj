@@ -22,7 +22,20 @@ export class DoctorSService {
     // try {}
     try {
       const patient = await this.patientResult.sequelize.query(
-        `SELECT * FROM PatientRecords AS PPD 
+        `SELECT 
+        PPD.pr_id as patient_record_id, 
+        PPD.pr_complaint as patient_complaint,
+        PPD.patient_pic as patient_pic,
+        P.p_first_name as first_name, 
+        P.p_last_name as last_name, 
+        P.p_phone_no as phone_no, 
+        P.p_email as email, 
+        O.o_first_name as operator_name,
+        O.o_last_name as operator_last_name,
+        O.o_email as operator_email,
+        O.o_phone_no as operator_phone_no,
+        H.h_name as hospital_name 
+        FROM PatientRecords AS PPD 
         JOIN Patients AS P 
         ON P.p_id = PPD.patientId 
         JOIN Operators AS O
@@ -55,11 +68,19 @@ export class DoctorSService {
       const patientsThatFeauturedOnce =
         (await this.patientResult.sequelize.query(
           `
-        SELECT PR.patient_record_id, 
-        P.p_first_name, 
-        P.p_last_name, 
-        P.p_phone_no, 
-        P.p_email, 
+        SELECT   
+        PR.patient_record_id as patient_record_id, 
+        PDD.pr_complaint as patient_complaint,
+        PDD.patient_pic as patient_pic,
+        P.p_first_name as first_name, 
+        P.p_last_name as last_name, 
+        P.p_phone_no as phone_no, 
+        P.p_email as email, 
+        O.o_first_name as operator_name,
+        O.o_last_name as operator_last_name,
+        O.o_email as operator_email,
+        O.o_phone_no as operator_phone_no,
+        H.h_name as hospital_name, 
         COUNT(PR.patient_record_id) 
         FROM PatientResults AS PR 
         JOIN PatientRecords AS PDD 
@@ -68,6 +89,8 @@ export class DoctorSService {
         ON PDD.patientId = P.p_id 
         JOIN Operators AS O
         ON O.o_id = PDD.operator_id
+        JOIN Hospitals AS H 
+        ON H.h_id = O.o_hospital_id
         GROUP BY PR.patient_record_id HAVING COUNT( PR.patient_record_id) = 1;
         `,
           {
@@ -118,11 +141,19 @@ export class DoctorSService {
       const patientsThatFeauturedTwice =
         (await this.patientResult.sequelize.query(
           `
-      SELECT PR.patient_record_id, 
-      P.p_first_name, 
-      P.p_last_name, 
-      P.p_phone_no, 
-      P.p_email, 
+      SELECT  
+      PR.patient_record_id as patient_record_id, 
+      PDD.pr_complaint as patient_complaint,
+      PDD.patient_pic as patient_pic,
+      P.p_first_name as first_name, 
+      P.p_last_name as last_name, 
+      P.p_phone_no as phone_no, 
+      P.p_email as email, 
+      O.o_first_name as operator_name,
+      O.o_last_name as operator_last_name,
+      O.o_email as operator_email,
+      O.o_phone_no as operator_phone_no,
+      H.h_name as hospital_name, 
       COUNT(PR.patient_record_id) 
       FROM PatientResults AS PR 
       JOIN PatientRecords AS PDD 
@@ -131,6 +162,8 @@ export class DoctorSService {
       ON PDD.patientId = P.p_id 
       JOIN Operators AS O
       ON O.o_id = PDD.operator_id
+      JOIN Hospitals AS H 
+      ON H.h_id = O.o_hospital_id
       GROUP BY PR.patient_record_id
       HAVING
       COUNT( PR.patient_record_id) = 2 AND SUM(PR.doctors_assessment) = 1;
@@ -224,11 +257,7 @@ export class DoctorSService {
             diagnosis: 'Postive',
           };
         }
-        await this.patientDiagnosis.create({
-          patient_record_id: body.patient_record_id,
-          patient_results: 'Negative',
-          comments: body.doctor_comment,
-        });
+        await this.patientResult.create({ ...body, doctor_id });
         return {
           message: 'Patient Results Added successfully',
           status: 200,

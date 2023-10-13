@@ -46,6 +46,7 @@ export class PatientRecordService {
         PDD.pr_id AS id,
         PDD.patient_pic AS patient_pic,
         PDD.pr_complaint AS patient_complaint,
+        PDD.pr_pic_id AS patient_pic_id,
         P.p_first_name AS first_name,
         P.p_last_name AS last_name,
         P.p_phone_no AS phone_no,
@@ -81,6 +82,7 @@ export class PatientRecordService {
         Ophone: string;
         OID: number;
         HID: number;
+        patient_pic_id: string;
       }[];
       const patientRecordData = patientRecord.map((patient) => ({
         id: patient.id,
@@ -92,6 +94,7 @@ export class PatientRecordService {
         pr_complaint: patient.patient_complaint,
         operator_email: patient.OMAIL,
         operator_phone_no: patient.Ophone,
+        patient_pic_id: patient.patient_pic_id,
       }));
       return patientRecordData;
     } catch (e) {

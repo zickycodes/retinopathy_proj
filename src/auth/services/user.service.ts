@@ -75,7 +75,7 @@ export class Userservice {
 
       if (identity === 'operator') {
         const operator = (await this.hospitaladmin.sequelize.query(
-          `SELECT O.o_id AS op_id, O.o_email AS email, O.o_first_name AS name, H.h_password AS password, H.h_id AS hos_id FROM Hospitals AS H JOIN Operators AS O ON H.h_id = O.o_hospital_id WHERE O.o_email = ?`,
+          `SELECT O.o_id AS op_id, O.o_email AS email, O.o_first_name AS name, O.o_password AS password, H.h_id AS hos_id FROM Hospitals AS H JOIN Operators AS O ON H.h_id = O.o_hospital_id WHERE O.o_email = ?`,
           { replacements: [userdetail.email], type: QueryTypes.SELECT },
         )) as {
           password: string;

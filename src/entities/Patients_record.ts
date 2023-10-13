@@ -51,6 +51,17 @@ export class PatientRecord extends Model {
   })
   patient_pic: string;
 
+  // @Column({
+  //   allowNull: false, // set the allowNull option to false to enforce not null constraint
+  //   validate: {
+  //     notNull: { msg: 'Picture ID is required' }, // add a validation message
+  //   },
+  // })
+  // patient_pic_id: string;
+
+  @Column({})
+  pr_pic_id: string;
+
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
     type: DataType.TEXT,
