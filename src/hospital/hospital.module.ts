@@ -10,6 +10,8 @@ import { OperatorService } from './services/operator.service';
 import { PatientRecordService } from './services/patients_record.service';
 import { PatientService } from './services/patients.service';
 import { EmailListener } from 'src/email/services/email.listener';
+import { DiagnosisService } from './services/diagnosis.service';
+import { PatientDiagnosis } from 'src/entities/Patient_diagnosis';
 // import { HospitalOperatorController } from './controller/operatoradmin.controller';
 
 @Module({
@@ -17,7 +19,12 @@ import { EmailListener } from 'src/email/services/email.listener';
     MulterModule.register({
       // dest: './uploads',
     }),
-    SequelizeModule.forFeature([Patient, PatientRecord, Operator]),
+    SequelizeModule.forFeature([
+      Patient,
+      PatientRecord,
+      Operator,
+      PatientDiagnosis,
+    ]),
   ],
   controllers: [HospitalController],
   providers: [
@@ -26,6 +33,7 @@ import { EmailListener } from 'src/email/services/email.listener';
     PatientRecordService,
     PatientService,
     EmailListener,
+    DiagnosisService,
   ],
 })
 export class HospitalAdminModule {}

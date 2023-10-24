@@ -3,11 +3,13 @@ import {
   Column,
   Model,
   BelongsTo,
+  DataType,
   //   HasOne,
   //   BelongsToMany,
   ForeignKey,
 } from 'sequelize-typescript';
 import { PatientRecord } from './Patients_record';
+import { Doctor } from './Doctors';
 
 @Table
 export class PatientDiagnosis extends Model {
@@ -21,8 +23,18 @@ export class PatientDiagnosis extends Model {
   })
   patient_record_id: number;
 
+  @ForeignKey(() => Doctor)
   @Column({
     allowNull: false, // set the allowNull option to false to enforce not null constraint
+    validate: {
+      notNull: { msg: 'Doctor Id required' }, // add a validation message
+    },
+  })
+  doctor_id: number;
+
+  @Column({
+    allowNull: false, // set the allowNull option to false to enforce not null constraint
+    type: DataType.TEXT,
     validate: {
       notNull: { msg: 'Patient Results is required' }, // add a validation message
     },
@@ -42,4 +54,10 @@ export class PatientDiagnosis extends Model {
     onUpdate: 'CASCADE',
   })
   patient_record: PatientRecord;
+
+  @BelongsTo(() => Doctor, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
+  doctor: Doctor;
 }

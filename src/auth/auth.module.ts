@@ -22,7 +22,7 @@ import { Doctor } from 'src/entities/Doctors';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_Secret'),
-        signOptions: { expiresIn: '8760h' },
+        signOptions: { expiresIn: '730h' },
       }),
     }),
   ],

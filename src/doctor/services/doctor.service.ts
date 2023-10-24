@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, Transaction } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 // import { Operator } from 'src/entities/Operators';
 // import { OperatorDto } from '../dto/operatordto';
@@ -207,6 +207,8 @@ export class DoctorSService {
   }
 
   async givePatientDiagnosis(body: patientresultdto, doctor_id: number) {
+    const transaction: Transaction =
+      await this.patientResult.sequelize.transaction();
     try {
       const findPatientCount = (await this.patientDiagnosis.sequelize.query(
         `SELECT COUNT(patient_record_id) AS COUNT, SUM(doctors_assessment) AS SUM FROM PatientResults AS PR WHERE patient_record_id = ? GROUP BY patient_record_id`,
@@ -218,9 +220,13 @@ export class DoctorSService {
         COUNT: number;
         SUM: string;
       }[];
-      const SUM = parseInt(findPatientCount[0].SUM);
+
+      const SUM =
+        findPatientCount.length === 0 ? 0 : parseInt(findPatientCount[0].SUM);
+      const COUNT =
+        findPatientCount.length === 0 ? 0 : findPatientCount[0].COUNT;
       // console.log(findPatientCount[0].COUNT === 2 && SUM === 1);
-      if (findPatientCount[0].COUNT === 0) {
+      if (COUNT === 0) {
         await this.patientResult.create({ ...body, doctor_id });
         return {
           message: 'Patient Results Added successfully',
@@ -228,16 +234,23 @@ export class DoctorSService {
         };
       }
       // Patient With single diagnosis
-      if (findPatientCount[0].COUNT === 1) {
+      if (COUNT === 1) {
         const sum = SUM + body.doctors_assessment;
         if (sum === 0) {
-          await this.patientResult.create({ ...body, doctor_id });
-          await this.patientDiagnosis.create({
-            patient_record_id: body.patient_record_id,
-            patient_results: 'Negative',
-            comments: body.doctor_comment,
-          });
-
+          await this.patientResult.create(
+            { ...body, doctor_id },
+            { transaction },
+          );
+          await this.patientDiagnosis.create(
+            {
+              patient_record_id: body.patient_record_id,
+              patient_results: 'Negative',
+              comments: body.doctor_comment,
+              doctor_id,
+            },
+            { transaction },
+          );
+          await transaction.commit();
           return {
             message: 'Patient Results Added successfully',
             status: 200,
@@ -245,19 +258,30 @@ export class DoctorSService {
           };
         }
         if (sum === 2) {
-          await this.patientResult.create({ ...body, doctor_id });
-          await this.patientDiagnosis.create({
-            patient_record_id: body.patient_record_id,
-            patient_results: 'Negative',
-            comments: body.doctor_comment,
-          });
+          await this.patientResult.create(
+            { ...body, doctor_id },
+            { transaction },
+          );
+          await this.patientDiagnosis.create(
+            {
+              patient_record_id: body.patient_record_id,
+              patient_results: 'Positive',
+              comments: body.doctor_comment,
+              doctor_id,
+            },
+            { transaction },
+          );
+          await transaction.commit();
           return {
             message: 'Patient Results Added successfully',
             status: 200,
             diagnosis: 'Postive',
           };
         }
-        await this.patientResult.create({ ...body, doctor_id });
+        await this.patientResult.create(
+          { ...body, doctor_id },
+          { transaction },
+        );
         return {
           message: 'Patient Results Added successfully',
           status: 200,
@@ -265,18 +289,25 @@ export class DoctorSService {
         };
       }
       // Patient with inconclusive diagnosis
-      if (findPatientCount[0].COUNT === 2 && SUM === 1) {
+      if (COUNT === 2 && SUM === 1) {
         // console.log('Hey');
         const sum = SUM + body.doctors_assessment;
         // console.log('s', sum);
         if (sum === 1) {
-          await this.patientResult.create({ ...body, doctor_id });
-          await this.patientDiagnosis.create({
-            patient_record_id: body.patient_record_id,
-            patient_results: 'Negative',
-            comments: body.doctor_comment,
-          });
-
+          await this.patientResult.create(
+            { ...body, doctor_id },
+            { transaction },
+          );
+          await this.patientDiagnosis.create(
+            {
+              patient_record_id: body.patient_record_id,
+              patient_results: 'Negative',
+              comments: body.doctor_comment,
+              doctor_id,
+            },
+            { transaction },
+          );
+          await transaction.commit();
           return {
             message: 'Patient Results Added successfully',
             status: 200,
@@ -284,12 +315,20 @@ export class DoctorSService {
           };
         }
         if (sum === 2) {
-          await this.patientResult.create({ ...body, doctor_id });
-          await this.patientDiagnosis.create({
-            patient_record_id: body.patient_record_id,
-            patient_results: 'Negative',
-            comments: body.doctor_comment,
-          });
+          await this.patientResult.create(
+            { ...body, doctor_id },
+            { transaction },
+          );
+          await this.patientDiagnosis.create(
+            {
+              patient_record_id: body.patient_record_id,
+              patient_results: 'Positive',
+              comments: body.doctor_comment,
+              doctor_id,
+            },
+            { transaction },
+          );
+          await transaction.commit();
           return {
             message: 'Patient Results Added successfully',
             status: 200,
@@ -298,6 +337,7 @@ export class DoctorSService {
         }
       }
     } catch (e) {
+      await transaction.rollback();
       throw new BadRequestException(e.message);
     }
   }

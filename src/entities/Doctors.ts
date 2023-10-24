@@ -4,11 +4,13 @@ import {
   Column,
   Model,
   PrimaryKey,
+  HasMany,
   //   HasOne,
   BelongsToMany,
 } from 'sequelize-typescript';
 import { PatientRecord } from './Patients_record';
 import { PatientResult } from './Patients_results';
+import { PatientDiagnosis } from './Patient_diagnosis';
 
 @Table
 export class Doctor extends Model {
@@ -66,6 +68,12 @@ export class Doctor extends Model {
     },
   })
   d_address: string;
+
+  @HasMany(() => PatientDiagnosis, {
+    onDelete: 'CASCADE', // This line ensures cascading deletion of child records.
+    onUpdate: 'CASCADE',
+  })
+  patient_diagnosis: PatientDiagnosis[];
 
   @BelongsToMany(() => PatientRecord, () => PatientResult)
   patient_records: PatientRecord[];

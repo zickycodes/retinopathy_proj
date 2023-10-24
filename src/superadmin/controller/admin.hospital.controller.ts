@@ -78,4 +78,19 @@ export class SuperAdminHosController {
     // console.log(body);
     return this.hospitalService.deleteHospital(param.id);
   }
+
+  @UseGuards(AdminGuard)
+  @Get('/get-diagnosis/:id')
+  showDiag(@Param() param: { id: number }) {
+    console.log(param.id);
+    return this.hospitalService.showDiagnosis(param.id);
+  }
+
+  // @UseGuards(AdminGuard)
+  // @Get('/get-diagnosis-hospital/:id')
+  // showDiagnosis(@Param() param: any) {
+  //   // console.log('pr', param.id);
+  //   console.log(param);
+  //   return this.showDiagnosis(param.id);
+  // }
 }

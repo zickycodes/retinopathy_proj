@@ -12,7 +12,7 @@ import {
   //   Get,
   //   Param,
   UseGuards,
-  Request,
+  // Request,
   UsePipes,
   ValidationPipe,
   Get,
@@ -21,7 +21,7 @@ import {
 // import { AuthGuard } from 'src/auth/services/auth.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
 import { Doctordto } from '../dto/doctor.dto';
-import { Hospitaldto } from '../dto/hospital.dto';
+// import { Hospitaldto } from '../dto/hospital.dto';
 import { DoctorService } from '../services/doctor.service';
 import { HospitalService } from '../services/hospital.service';
 

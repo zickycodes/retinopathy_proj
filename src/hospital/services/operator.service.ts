@@ -6,6 +6,7 @@ import { QueryTypes } from 'sequelize';
 import * as bcrypt from 'bcrypt';
 import { EditOperatorDto } from '../dto/editoperatordto';
 import { EmailListener } from 'src/email/services/email.listener';
+import { Transaction } from 'sequelize';
 // import { PatientDto } from '../dto/patientdto';
 // import { PatientRecord } from 'src/entities/Patients_record';
 // import { Patient } from 'src/entities/Patients';
@@ -79,19 +80,25 @@ export class OperatorService {
     }
   }
 
-  async addOperators(operator: OperatorDto) {
+  async addOperators(operator: OperatorDto, transaction?: Transaction) {
     try {
       const { o_email } = operator;
-      const opera = await this.operator.findOne({ where: { o_email } });
+      const opera = await this.operator.findOne({
+        where: { o_email },
+        transaction,
+      });
       if (opera) {
         throw new BadRequestException('Operator already exists');
       }
       const password = operator.o_password;
       const hashedPassword = await bcrypt.hash(password, 10);
-      const res = await this.operator.create({
-        ...operator,
-        o_password: hashedPassword,
-      });
+      const res = await this.operator.create(
+        {
+          ...operator,
+          o_password: hashedPassword,
+        },
+        { transaction },
+      );
       await this.emailListener.handleOperator(o_email, password);
       return {
         message: 'Operator created successfully',

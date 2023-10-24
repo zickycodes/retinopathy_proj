@@ -36,6 +36,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { OperatorGuard } from 'src/guards/operator.guard';
 import { EditOperatorDto } from '../dto/editoperatordto';
+import { DiagnosisService } from '../services/diagnosis.service';
 // import { AuthGuard } from '../services/auth.guard';
 
 @Controller('/hospital-admin')
@@ -44,6 +45,7 @@ export class HospitalController {
     private operatorService: OperatorService,
     private patientService: PatientService,
     private patientRecordService: PatientRecordService,
+    private diagnosisService: DiagnosisService,
   ) {}
 
   // Operators Controller Erros
@@ -183,6 +185,34 @@ export class HospitalController {
   deleteRecord(@Param() param: any) {
     // console.log(body);
     return this.patientRecordService.deleteRecord(param.id);
+  }
+
+  // Diagnosis block
+  @Get('/negative-diagnosed/:pageID')
+  @UseGuards(OperatorGuard)
+  negativeDiagnosis(@Request() req, @Param() param: { pageID: number }) {
+    return this.diagnosisService.showNegativeDiagnosedPatient(
+      req.user.hos_id,
+      param.pageID,
+    );
+  }
+
+  @Get('/positive-diagnosed/:pageID')
+  @UseGuards(OperatorGuard)
+  positiveDiagnosis(@Request() req, @Param() param: { pageID: number }) {
+    return this.diagnosisService.showPositiveDiagnosedPatient(
+      req.user.hos_id,
+      param.pageID,
+    );
+  }
+
+  @Get('/undiagnosed/:pageID')
+  @UseGuards(OperatorGuard)
+  undiagnosedPatients(@Request() req, @Param() param: { pageID: number }) {
+    return this.diagnosisService.showUndiagnosedPatients(
+      req.user.hos_id,
+      param.pageID,
+    );
   }
 
   // @UseGuards(OperatorGuard)
