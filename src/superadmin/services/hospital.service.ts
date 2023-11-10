@@ -6,9 +6,11 @@ import { Hospitaldto } from '../dto/hospital.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { EditHospitaldto } from '../dto/edithospital.dto';
 import { EmailListener } from 'src/email/services/email.listener';
-import { OperatorDto } from 'src/hospital/dto/operatordto';
+// import { OperatorDto } from 'src/hospital/dto/operatordto';
 import { OperatorService } from 'src/hospital/services/operator.service';
 import { QueryTypes, Transaction } from 'sequelize';
+import { Doctor } from 'src/entities/Doctors';
+import { Operator } from 'src/entities/Operators';
 // import { EmailEvent } from 'src/email/events/emailevents';
 // import { EventEmitter2 } from '@nestjs/event-emitter';
 // import { retry } from 'rxjs';
@@ -18,6 +20,10 @@ export class HospitalService {
   constructor(
     @InjectModel(Hospital)
     private hospital: typeof Hospital,
+    @InjectModel(Doctor)
+    private doctor: typeof Doctor,
+    @InjectModel(Operator)
+    private operator: typeof Operator,
     private emailListener: EmailListener,
     private operatorService: OperatorService,
   ) {}
@@ -125,6 +131,55 @@ export class HospitalService {
       };
     } catch (e) {
       throw new BadRequestException(e);
+    }
+  }
+
+  async stats() {
+    try {
+      const doctorsCount = await this.doctor.count();
+      const hospitalsCount = await this.hospital.count();
+      const operatorsCount = await this.operator.count();
+      return {
+        status: 200,
+        doctorsCount,
+        hospitalsCount,
+        operatorsCount,
+      };
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+
+  async averageWaitingTime(month: number, year: number) {
+    try {
+      const averageWaitingTime = await this.hospital.sequelize.query(
+        `SELECT 
+      MONTH(PatientRecords.updatedAt) as 'Month', 
+      YEAR(PatientRecords.updatedAt) as 'Year',
+      AVG((DATEDIFF(PatientRecords.updatedAt, PatientDiagnoses.createdAt) * 24)) as 'AverageTimeDifferenceInHours'
+  FROM 
+      PatientRecords
+  INNER JOIN 
+      PatientDiagnoses ON PatientRecords.pr_id = PatientDiagnoses.patient_record_id
+  WHERE 
+      MONTH(PatientRecords.updatedAt) = ? AND 
+      YEAR(PatientRecords.updatedAt) = ?
+  GROUP BY 
+      Month, Year;`,
+        {
+          replacements: [month, year],
+          type: QueryTypes.SELECT,
+        },
+      );
+      return {
+        status: 200,
+        averageWaitingTime:
+          averageWaitingTime.length === 0
+            ? 'No records'
+            : averageWaitingTime[0],
+      };
+    } catch (e) {
+      throw new BadRequestException(e.message);
     }
   }
 }

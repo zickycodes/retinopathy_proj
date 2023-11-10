@@ -37,6 +37,7 @@ import { extname } from 'path';
 import { OperatorGuard } from 'src/guards/operator.guard';
 import { EditOperatorDto } from '../dto/editoperatordto';
 import { DiagnosisService } from '../services/diagnosis.service';
+import { StatService } from '../services/stat.service';
 // import { AuthGuard } from '../services/auth.guard';
 
 @Controller('/hospital-admin')
@@ -46,6 +47,7 @@ export class HospitalController {
     private patientService: PatientService,
     private patientRecordService: PatientRecordService,
     private diagnosisService: DiagnosisService,
+    private statService: StatService,
   ) {}
 
   // Operators Controller Erros
@@ -253,4 +255,9 @@ export class HospitalController {
   //   }
   //   return this.patientRecordService.showPatients();
   // }
+  @Get('/overview')
+  @UseGuards(OperatorGuard)
+  async stat(@Request() req) {
+    return await this.statService.stat(req.user.hos_id);
+  }
 }

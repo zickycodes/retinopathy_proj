@@ -86,6 +86,20 @@ export class SuperAdminHosController {
     return this.hospitalService.showDiagnosis(param.id);
   }
 
+  @UseGuards(AdminGuard)
+  @Get('/overview')
+  stats() {
+    // console.log(param.id);
+    return this.hospitalService.stats();
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/average-waiting-time/:month/:year')
+  waitingTime(@Param() param: { month: number; year: number }) {
+    // console.log(param.id);
+    return this.hospitalService.averageWaitingTime(param.month, param.year);
+  }
+
   // @UseGuards(AdminGuard)
   // @Get('/get-diagnosis-hospital/:id')
   // showDiagnosis(@Param() param: any) {

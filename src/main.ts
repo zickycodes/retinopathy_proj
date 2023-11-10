@@ -20,7 +20,8 @@ async function bootstrap() {
     await sequelize.authenticate();
     console.log('Connected to the database');
     // const configService = new ConfigService();
-    await app.listen(3000, '192.168.1.126');
+    // await app.listen(3000, '192.168.1.126');
+    await app.listen(3000, '192.168.65.101');
     // await app.listen(3000);
     // app.enableCors();
     console.log('Application started');

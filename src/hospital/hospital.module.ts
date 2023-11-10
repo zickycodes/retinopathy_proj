@@ -12,6 +12,7 @@ import { PatientService } from './services/patients.service';
 import { EmailListener } from 'src/email/services/email.listener';
 import { DiagnosisService } from './services/diagnosis.service';
 import { PatientDiagnosis } from 'src/entities/Patient_diagnosis';
+import { StatService } from './services/stat.service';
 // import { HospitalOperatorController } from './controller/operatoradmin.controller';
 
 @Module({
@@ -34,6 +35,7 @@ import { PatientDiagnosis } from 'src/entities/Patient_diagnosis';
     PatientService,
     EmailListener,
     DiagnosisService,
+    StatService,
   ],
 })
 export class HospitalAdminModule {}
